@@ -32,20 +32,30 @@ class App extends Component {
     loading: true,
   }
   componentDidMount = async () => {
+    const {storage} = this.props
+    const selectedCountry = storage.getSelectedCountry()
+    const selectedCity = storage.getSelectedCity()
     const {entries, countries} = await getEvents()
     this.setState({
       loading: false,
       entries,
       countries,
+      selectedCountry,
+      selectedCity: selectedCountry ? selectedCity : '',
     })
   }
 
   createSelectHandler(stateProperty) {
     return selectedOption => {
       const value = selectedOption ? selectedOption.value : ''
-      this.setState({
-        [stateProperty]: value,
-      })
+      this.setState(
+        {
+          [stateProperty]: value,
+        },
+        () => {
+          this.props.storage.setItem(stateProperty, value)
+        },
+      )
     }
   }
 
