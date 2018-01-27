@@ -31,6 +31,14 @@ class App extends Component {
     selectedOption: '',
     loading: true,
   }
+
+  constructor(props) {
+    super(props)
+
+    this.handleCountrySelect = this.createCountrySelectHandler()
+    this.handleCitySelect = this.createSelectHandler('selectedCity')
+  }
+
   componentDidMount = async () => {
     const {storage} = this.props
     const selectedCountry = storage.getSelectedCountry()
@@ -60,8 +68,9 @@ class App extends Component {
   }
 
   createCountrySelectHandler() {
+    const generalPropHandler = this.createSelectHandler('selectedCountry')
     return selectedOption => {
-      this.createSelectHandler('selectedCountry')(selectedOption)
+      generalPropHandler(selectedOption)
       this.setState({
         selectedCity: '',
       })
@@ -89,7 +98,7 @@ class App extends Component {
         name="form-field-city-name"
         options={cities}
         value={selectedCity}
-        onChange={this.createSelectHandler('selectedCity')}
+        onChange={this.handleCitySelect}
       />
     )
     return (
@@ -103,7 +112,7 @@ class App extends Component {
             name="form-field-country-name"
             options={countriesList}
             value={selectedCountry}
-            onChange={this.createCountrySelectHandler()}
+            onChange={this.handleCountrySelect}
           />
           {selectedCountry ? citySelect : ''}
         </Search>
