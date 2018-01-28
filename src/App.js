@@ -19,6 +19,9 @@ const Header = styled.h1`
 const Search = styled.div`
   margin-bottom: 15px;
 `
+const StyledSelect = styled(Select)`
+  margin-bottom: 10px;
+`
 
 class App extends Component {
   state = {
@@ -29,21 +32,49 @@ class App extends Component {
     selectedOption: '',
     loading: true,
   }
+
+  constructor(props) {
+    super(props)
+
+    this.handleCountrySelect = this.createCountrySelectHandler()
+    this.handleCitySelect = this.createSelectHandler('selectedCity')
+  }
+
   componentDidMount = async () => {
+    const {storage} = this.props
+    const selectedCountry = storage.getSelectedCountry()
+    const selectedCity = storage.getSelectedCity()
     const {entries, countries} = await getEvents()
     this.setState({
       loading: false,
       entries,
       countries,
+      selectedCountry,
+      selectedCity: selectedCountry ? selectedCity : '',
     })
   }
 
-  handleChange = selectedOption => {
-    if (selectedOption !== null) {
-      const {value} = selectedOption
-      this.setState({selectedOption: value, filter: value, type: 'country'})
-    } else {
-      this.setState({selectedOption: '', filter: '', type: 'country'})
+  createSelectHandler(stateProperty) {
+    return selectedOption => {
+      const value = selectedOption ? selectedOption.value : ''
+      this.setState(
+        {
+          [stateProperty]: value,
+        },
+        () => {
+          this.props.storage.setItem(stateProperty, value)
+        },
+      )
+    }
+  }
+
+  createCountrySelectHandler() {
+    const generalPropHandler = this.createSelectHandler('selectedCountry')
+    return selectedOption => {
+      generalPropHandler(selectedOption)
+      this.setState({
+        selectedCity: '',
+      })
     }
   }
   renderFooter = () => {
@@ -52,27 +83,45 @@ class App extends Component {
     return loading ? null : <Footer />
   }
   render() {
-    const {countries, selectedOption: value, loading, filter, type, entries} = this.state
+    const {countries, selectedCountry, selectedCity, loading, entries} = this.state
     const countriesList = []
     countries.forEach(value => {
-      countriesList.push({value, label: value})
+      countriesList.push({value: value.name, label: value.name})
     })
-
+    let cities = []
+    if (selectedCountry) {
+      const country = countries.find(({name}) => name === selectedCountry)
+      cities = country.cities.map(city => {
+        return {value: city, label: city}
+      })
+    }
+    let citySelect = (
+      <StyledSelect
+        clearValueText="Очистить"
+        placeholder="Выберите город"
+        noResultsText="Ничего не найдено"
+        name="form-field-city-name"
+        options={cities}
+        value={selectedCity}
+        onChange={this.handleCitySelect}
+      />
+    )
     return (
       <Container>
         <Header>Календарь событий по&nbsp;фронтенду</Header>
         <Search>
-          <Select
+          <StyledSelect
             clearValueText="Очистить"
             placeholder="Выберите страну"
             noResultsText="Ничего не найдено"
-            name="form-field-name"
+            name="form-field-country-name"
             options={countriesList}
-            value={value}
-            onChange={this.handleChange}
+            value={selectedCountry}
+            onChange={this.handleCountrySelect}
           />
+          {selectedCountry ? citySelect : ''}
         </Search>
-        {loading ? <Preloader /> : <Events filter={filter} type={type} entries={entries} />}
+        {loading ? <Preloader /> : <Events country={selectedCountry} city={selectedCity} entries={entries} />}
         {this.renderFooter()}
       </Container>
     )

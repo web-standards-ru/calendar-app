@@ -69,8 +69,9 @@ class Events extends Component {
   }
 
   updateEvents = props => {
-    const {entries, filter, type} = props || this.props
-    const list = this.filterEvents(entries, filter, type)
+    const {entries, country, city} = props || this.props
+    let list = this.filterEvents(entries, country, 'country')
+    list = this.filterEvents(list, city, 'city')
     this.setState({
       events: list,
     })
