@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import Events from './components/Events'
 import Preloader from './components/Preloader'
 import {getEvents} from './utils/api'
+import Footer from './components/Footer'
 
 const Container = styled.div`
   max-width: 768px;
@@ -76,7 +77,11 @@ class App extends Component {
       })
     }
   }
+  renderFooter = () => {
+    const {loading} = this.state
 
+    return loading ? null : <Footer />
+  }
   render() {
     const {countries, selectedCountry, selectedCity, loading, entries} = this.state
     const countriesList = []
@@ -117,6 +122,7 @@ class App extends Component {
           {selectedCountry ? citySelect : ''}
         </Search>
         {loading ? <Preloader /> : <Events country={selectedCountry} city={selectedCity} entries={entries} />}
+        {this.renderFooter()}
       </Container>
     )
   }
