@@ -2,10 +2,10 @@ import React, {Component} from 'react'
 import Select from 'react-select'
 import 'react-select/dist/react-select.css'
 import styled from 'styled-components'
-import Events from './components/Events'
-import Preloader from './components/Preloader'
-import {getEvents} from './utils/api'
-import Footer from './components/Footer'
+import Events from '../Events'
+import Preloader from '../Preloader'
+import {getEvents} from '../../utils/api'
+import Footer from '../Footer'
 
 const Container = styled.div`
   max-width: 768px;
