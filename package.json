@@ -3,7 +3,7 @@
   "description": "Calendar app",
   "author": "Dmitriy Shved <dshved@hotmail.com>",
   "version": "0.1.0",
-  "homepage": "https://web-standards.ru/calendar",
+  "homepage": "https://frontendcalendar.tk",
   "devDependencies": {
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-compat": "^2.1.0",

@@ -1,8 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
+import App from './components/App'
+import Storage from './utils/storage'
 import registerServiceWorker from './registerServiceWorker'
-import { injectGlobal } from 'styled-components'
+import {injectGlobal} from 'styled-components'
 
 injectGlobal`
   body {
@@ -19,5 +20,5 @@ injectGlobal`
   }
 `
 
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App storage={new Storage()} />, document.getElementById('root'))
 registerServiceWorker()
