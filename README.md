@@ -1,9 +1,6 @@
 # Веб-интерфейс календаря событий по фронтенду
 
-Адрес календаря:
-
-* [web-standards.ru/calendar](https://web-standards.ru/calendar)
-* [frontendcalendar.tk](https://frontendcalendar.tk)
+Адрес календаря: [frontendcalendar.tk](https://frontendcalendar.tk)
 
 Правки, замечания и идеи по развитию — [в ишьях](https://github.com/web-standards-ru/calendar-app/issues).
 
