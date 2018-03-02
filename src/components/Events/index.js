@@ -29,12 +29,17 @@ const ItemInner = styled.div`
   width: 100%;
   margin-left: 15px;
 `
-const Name = styled.div`
+const Name = styled.a`
+  display: block;
   margin-bottom: 10px;
   line-height: 1;
   font-family: Helvetica;
   font-size: 28px;
   color: #e15345;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 `
 const Row = styled.div`
   display: flex;
@@ -94,7 +99,9 @@ class Events extends Component {
         {events.map((el, key) => (
           <Item key={key}>
             <ItemInner>
-              <Name>{el.name}</Name>
+              <Name target="_blank" href={el.link}>
+                {el.name}
+              </Name>
               <Row>
                 <PlaceholderIcon />
                 <span>
