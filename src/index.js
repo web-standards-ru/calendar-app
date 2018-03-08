@@ -18,6 +18,14 @@ injectGlobal`
   .Select-option.is-selected {
     background-color: #bab8b841 !important;
   }
+  .Select--multi .Select-value {
+    color: #e15345;
+    border: 1px solid #f3bdb8;
+    background-color: rgba(243, 185, 180, 0.1);
+  }
+  .Select--multi .Select-value-icon {
+    border-right: 1px solid #f3bdb8;
+  }
 `
 
 ReactDOM.render(<App storage={new Storage()} />, document.getElementById('root'))
