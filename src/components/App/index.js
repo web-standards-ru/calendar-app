@@ -65,6 +65,7 @@ class App extends Component {
         },
         () => {
           this.props.storage.setItem(stateProperty, JSON.stringify(value))
+          if (stateProperty === 'selectedCountry') this.props.storage.setItem('selectedCity', '[]')
         },
       )
     }
@@ -76,7 +77,7 @@ class App extends Component {
     return selectedOption => {
       generalPropHandler(selectedOption)
       this.setState({
-        selectedCity: '',
+        selectedCity: [],
       })
     }
   }

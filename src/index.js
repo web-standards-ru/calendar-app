@@ -26,6 +26,10 @@ injectGlobal`
   .Select--multi .Select-value-icon {
     border-right: 1px solid #f3bdb8;
   }
+  .Select--multi .Select-value-icon:hover, .Select--multi .Select-value-icon:focus {
+    background-color: rgb(251, 228, 227);
+    color: #c73c2f;
+  }
 `
 
 ReactDOM.render(<App storage={new Storage()} />, document.getElementById('root'))
