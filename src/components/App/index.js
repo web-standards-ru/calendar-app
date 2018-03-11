@@ -51,8 +51,8 @@ class App extends Component {
       loading: false,
       entries,
       countries,
-      selectedCountry: selectedCountry ? JSON.parse(selectedCountry) : [],
-      selectedCity: selectedCity ? JSON.parse(selectedCity) : [],
+      selectedCountry: selectedCountry.length ? JSON.parse(selectedCountry) : [],
+      selectedCity: selectedCountry.length ? JSON.parse(selectedCity) : [],
     })
   }
 
@@ -65,20 +65,40 @@ class App extends Component {
         },
         () => {
           this.props.storage.setItem(stateProperty, JSON.stringify(value))
-          if (stateProperty === 'selectedCountry') this.props.storage.setItem('selectedCity', '[]')
+          if (stateProperty === 'selectedCountry') {
+            this.removeCity(value)
+          }
         },
       )
     }
   }
+  removeCity = value => {
+    const {countries, selectedCity} = this.state
+    const list = []
+    const cities = []
+    value.map(item => {
+      const s = countries.find(({name}) => name === item.value)
+      return list.push(s)
+    })
+    list.map(item => {
+      return item.cities.map(item => {
+        return cities.push({value: item, label: item})
+      })
+    })
+    const newSelectedCity = []
+    cities.map(item => {
+      const s = selectedCity.find(({value}) => value === item.value)
+      if (s) newSelectedCity.push(s)
+      return false
+    })
+    this.setState({selectedCity: newSelectedCity})
+    this.props.storage.setItem('selectedCity', JSON.stringify(newSelectedCity))
+  }
 
   createCountrySelectHandler() {
     const generalPropHandler = this.createSelectHandler('selectedCountry')
-
     return selectedOption => {
       generalPropHandler(selectedOption)
-      this.setState({
-        selectedCity: [],
-      })
     }
   }
   renderFooter = () => {
