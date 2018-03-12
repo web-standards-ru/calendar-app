@@ -31,6 +31,8 @@ class App extends Component {
     type: '',
     selectedOption: '',
     loading: true,
+    selectedCountry: [],
+    selectedCity: [],
   }
 
   constructor(props) {
@@ -49,32 +51,54 @@ class App extends Component {
       loading: false,
       entries,
       countries,
-      selectedCountry,
-      selectedCity: selectedCountry ? selectedCity : '',
+      selectedCountry: selectedCountry.length ? JSON.parse(selectedCountry) : [],
+      selectedCity: selectedCountry.length ? JSON.parse(selectedCity) : [],
     })
   }
 
   createSelectHandler(stateProperty) {
     return selectedOption => {
-      const value = selectedOption ? selectedOption.value : ''
+      const value = selectedOption ? selectedOption : ''
       this.setState(
         {
           [stateProperty]: value,
         },
         () => {
-          this.props.storage.setItem(stateProperty, value)
+          this.props.storage.setItem(stateProperty, JSON.stringify(value))
+          if (stateProperty === 'selectedCountry') {
+            this.removeCity(value)
+          }
         },
       )
     }
+  }
+  removeCity = value => {
+    const {countries, selectedCity} = this.state
+    const list = []
+    const cities = []
+    value.map(item => {
+      const s = countries.find(({name}) => name === item.value)
+      return list.push(s)
+    })
+    list.map(item => {
+      return item.cities.map(item => {
+        return cities.push({value: item, label: item})
+      })
+    })
+    const newSelectedCity = []
+    cities.map(item => {
+      const s = selectedCity.find(({value}) => value === item.value)
+      if (s) newSelectedCity.push(s)
+      return false
+    })
+    this.setState({selectedCity: newSelectedCity})
+    this.props.storage.setItem('selectedCity', JSON.stringify(newSelectedCity))
   }
 
   createCountrySelectHandler() {
     const generalPropHandler = this.createSelectHandler('selectedCountry')
     return selectedOption => {
       generalPropHandler(selectedOption)
-      this.setState({
-        selectedCity: '',
-      })
     }
   }
   renderFooter = () => {
@@ -89,10 +113,17 @@ class App extends Component {
       countriesList.push({value: value.name, label: value.name})
     })
     let cities = []
-    if (selectedCountry) {
-      const country = countries.find(({name}) => name === selectedCountry)
-      cities = country.cities.map(city => {
-        return {value: city, label: city}
+
+    if (selectedCountry.length) {
+      const list = []
+      selectedCountry.map(item => {
+        const s = countries.find(({name}) => name === item.value)
+        return list.push(s)
+      })
+      list.map(item => {
+        return item.cities.map(item => {
+          return cities.push({value: item, label: item})
+        })
       })
     }
     let citySelect = (
@@ -102,6 +133,7 @@ class App extends Component {
         noResultsText="Ничего не найдено"
         name="form-field-city-name"
         options={cities}
+        multi
         value={selectedCity}
         onChange={this.handleCitySelect}
       />
@@ -116,10 +148,11 @@ class App extends Component {
             noResultsText="Ничего не найдено"
             name="form-field-country-name"
             options={countriesList}
+            multi
             value={selectedCountry}
             onChange={this.handleCountrySelect}
           />
-          {selectedCountry ? citySelect : ''}
+          {selectedCountry.length ? citySelect : ''}
         </Search>
         {loading ? <Preloader /> : <Events country={selectedCountry} city={selectedCity} entries={entries} />}
         {this.renderFooter()}
