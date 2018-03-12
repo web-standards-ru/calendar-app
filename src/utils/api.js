@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-function sortStrings(a, b) {
+export const sortStrings = (a, b) => {
   const upperA = a.toUpperCase()
   const upperB = b.toUpperCase()
   if (upperA < upperB) {

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {CalendarIcon, ClockIcon, LinkIcon, PlaceholderIcon} from '../Icons'
 import styled from 'styled-components'
-import {getHumanDate} from '../../utils/date'
+import {getHumanDate, sortDate} from '../../utils/date'
 
 const List = styled.ul`
   margin: 0;
@@ -76,19 +76,34 @@ class Events extends Component {
   updateEvents = props => {
     const {entries, country, city} = props || this.props
     let list = this.filterEvents(entries, country, 'country')
-    list = this.filterEvents(list, city, 'city')
+    if (city.length && country.length) {
+      list = this.filterEvents(list, city, 'city')
+    }
+
     this.setState({
       events: list,
     })
   }
 
-  filterEvents = (arr, value = '', type = 'city') => {
-    const list = arr.filter(function(item) {
-      if (type) {
-        return item.location[type].toLowerCase().search(value.toLowerCase()) !== -1
-      }
-      return item
+  filterEvents = (arr, selected = [], type = 'city') => {
+    if (!selected.length) return arr
+    let list = []
+    selected.map(({value}) => {
+      const find = arr.filter(item => {
+        if (type) {
+          return item.location[type].toLowerCase().search(value.toLowerCase()) !== -1
+        }
+        return item
+      })
+      return find.map(item => {
+        return list.push(item)
+      })
     })
+
+    list.sort((eventA, eventB) => {
+      return sortDate(eventA, eventB)
+    })
+
     return list
   }
 
