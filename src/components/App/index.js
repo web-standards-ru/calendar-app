@@ -44,15 +44,29 @@ class App extends Component {
 
   componentDidMount = async () => {
     const {storage} = this.props
-    const selectedCountry = storage.getSelectedCountry()
-    const selectedCity = storage.getSelectedCity()
+    let selectedCountry = storage.getSelectedCountry()
+    let selectedCity = storage.getSelectedCity()
+    try {
+      selectedCountry = JSON.parse(selectedCountry)
+      selectedCity = JSON.parse(selectedCity)
+    } catch (err) {
+      selectedCountry = []
+      this.props.storage.setItem('selectedCountry', JSON.stringify(selectedCountry))
+
+      selectedCity = []
+      this.props.storage.setItem('selectedCity', JSON.stringify(selectedCity))
+    }
+
+    if (typeof selectedCountry !== 'object') this.props.storage.setItem('selectedCountry', '[]')
+    if (typeof selectedCity !== 'object') this.props.storage.setItem('selectedCity', '[]')
+
     const {entries, countries} = await getEvents()
     this.setState({
       loading: false,
       entries,
       countries,
-      selectedCountry: selectedCountry.length ? JSON.parse(selectedCountry) : [],
-      selectedCity: selectedCountry.length ? JSON.parse(selectedCity) : [],
+      selectedCountry,
+      selectedCity,
     })
   }
 
@@ -113,19 +127,36 @@ class App extends Component {
       countriesList.push({value: value.name, label: value.name})
     })
     let cities = []
+    const list = []
+
+    let selectedCountries = selectedCountry
+    let selectedCities = selectedCity
 
     if (selectedCountry.length) {
-      const list = []
       selectedCountry.map(item => {
-        const s = countries.find(({name}) => name === item.value)
-        return list.push(s)
+        const country = countries.find(({name}) => name === item.value)
+        if (country) list.push(country)
+        return false
       })
-      list.map(item => {
-        return item.cities.map(item => {
-          return cities.push({value: item, label: item})
+
+      if (list.length) {
+        list.map(item => {
+          return item.cities.map(item => {
+            return cities.push({value: item, label: item})
+          })
         })
-      })
+        let checkCity = []
+        cities.map(item => {
+          const city = selectedCity.find(({value}) => value === item.value)
+          if (city) checkCity.push(city)
+          return false
+        })
+        if (!checkCity.length) selectedCities = []
+      } else {
+        selectedCountries = []
+      }
     }
+
     let citySelect = (
       <StyledSelect
         clearValueText="Очистить"
@@ -134,7 +165,7 @@ class App extends Component {
         name="form-field-city-name"
         options={cities}
         multi
-        value={selectedCity}
+        value={selectedCities}
         onChange={this.handleCitySelect}
       />
     )
@@ -149,12 +180,12 @@ class App extends Component {
             name="form-field-country-name"
             options={countriesList}
             multi
-            value={selectedCountry}
+            value={selectedCountries}
             onChange={this.handleCountrySelect}
           />
-          {selectedCountry.length ? citySelect : ''}
+          {selectedCountries.length ? citySelect : ''}
         </Search>
-        {loading ? <Preloader /> : <Events country={selectedCountry} city={selectedCity} entries={entries} />}
+        {loading ? <Preloader /> : <Events country={selectedCountries} city={selectedCities} entries={entries} />}
         {this.renderFooter()}
       </Container>
     )
