@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
-import Select from 'react-select'
-import 'react-select/dist/react-select.css'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import Events from '../Events'
 import Preloader from '../Preloader'
 import {getEvents} from '../../utils/api'
 import Footer from '../Footer'
+import {MassonryPanel} from './masonry-panel'
+import SearchIcon from '../Icons/SearchIcon'
 
 const Container = styled.div`
-  max-width: 768px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 15px;
   position: relative;
@@ -17,10 +17,49 @@ const Header = styled.h1`
   font-size: 36px;
 `
 const Search = styled.div`
-  margin-bottom: 15px;
+  flex: 1 1 30%;
+  min-width: 230px;
 `
-const StyledSelect = styled(Select)`
-  margin-bottom: 10px;
+const EventsContainer = styled.div`
+  flex: 1 1 70%;
+`
+
+const ContentContainer = styled.div`
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+`
+
+const SearchPanelTitleContainer = styled.div`
+  display: flex;
+`
+const SearchInput = styled.input`
+  max-width: 140px;
+  flex: 1 1 auto;
+  height: 1em;
+  margin: auto;
+  margin-right: 0;
+  border: none;
+  background: transparent;
+  max-width: 120px;
+  font-size: 1.5em;
+  font-style: italic;
+
+  ${props =>
+    props.hasValue &&
+    css`
+      border-bottom: 1px solid gray;
+    `};
+`
+const SearchInputLabel = styled.label`
+  margin: auto;
+  margin-right: 0;
+  cursor: pointer;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 20px;
+  margin-left: 0;
+  flex: 0 0 auto;
 `
 
 class App extends Component {
@@ -43,12 +82,30 @@ class App extends Component {
   }
 
   componentDidMount = async () => {
+    const {entries, countries} = await getEvents()
+
     const {storage} = this.props
     let selectedCountry = storage.getSelectedCountry()
     let selectedCity = storage.getSelectedCity()
     try {
-      selectedCountry = JSON.parse(selectedCountry)
-      selectedCity = JSON.parse(selectedCity)
+      let countryParsed = JSON.parse(selectedCountry)
+      selectedCountry =
+        (countryParsed &&
+          countryParsed.length &&
+          countryParsed.map(countryValue => {
+            return {value: countryValue, label: countryValue} // countries.find(c => c.name == countryValue);
+          })) ||
+        []
+      let cityParsed = JSON.parse(selectedCity)
+      if (cityParsed && cityParsed.length !== undefined) {
+        //let cities = countries
+        //  .map(x => x.cities)
+        //  .reduce((current, next) => current.concat(next), [])
+        //  .map(x => ({label: x, value: x}))
+        selectedCity = cityParsed.map(cityValue => {
+          return {value: cityValue, label: cityValue} //cities.find(c => c.value == cityValue);
+        })
+      }
     } catch (err) {
       selectedCountry = []
       this.props.storage.setItem('selectedCountry', JSON.stringify(selectedCountry))
@@ -60,7 +117,6 @@ class App extends Component {
     if (typeof selectedCountry !== 'object') this.props.storage.setItem('selectedCountry', '[]')
     if (typeof selectedCity !== 'object') this.props.storage.setItem('selectedCity', '[]')
 
-    const {entries, countries} = await getEvents()
     this.setState({
       loading: false,
       entries,
@@ -78,7 +134,7 @@ class App extends Component {
           [stateProperty]: value,
         },
         () => {
-          this.props.storage.setItem(stateProperty, JSON.stringify(value))
+          this.props.storage.setItem(stateProperty, JSON.stringify(value.map(x => x.value)))
           if (stateProperty === 'selectedCountry') {
             this.removeCity(value)
           }
@@ -105,8 +161,8 @@ class App extends Component {
       if (s) newSelectedCity.push(s)
       return false
     })
-    this.setState({selectedCity: newSelectedCity})
-    this.props.storage.setItem('selectedCity', JSON.stringify(newSelectedCity))
+    this.setState({selectedCity: newSelectedCity.map(x => x.value)})
+    this.props.storage.setItem('selectedCity', JSON.stringify(newSelectedCity.map(x => x.value)))
   }
 
   createCountrySelectHandler() {
@@ -115,6 +171,19 @@ class App extends Component {
       generalPropHandler(selectedOption)
     }
   }
+
+  onSearchCountry = event => {
+    this.setState({
+      countrySearchTerm: event.target.value,
+    })
+  }
+
+  onSearchCity = event => {
+    this.setState({
+      citySearchTerm: event.target.value,
+    })
+  }
+
   renderFooter = () => {
     const {loading} = this.state
 
@@ -155,37 +224,60 @@ class App extends Component {
       } else {
         selectedCountries = []
       }
+    } else {
+      cities = countries
+        .map(x => x.cities)
+        .reduce((current, next) => current.concat(next), [])
+        .map(x => ({label: x, value: x}))
     }
 
-    let citySelect = (
-      <StyledSelect
-        clearValueText="Очистить"
-        placeholder="Выберите город"
-        noResultsText="Ничего не найдено"
-        name="form-field-city-name"
-        options={cities}
-        multi
-        value={selectedCities}
-        onChange={this.handleCitySelect}
-      />
-    )
     return (
       <Container>
         <Header>Календарь событий по&nbsp;фронтенду</Header>
-        <Search>
-          <StyledSelect
-            clearValueText="Очистить"
-            placeholder="Выберите страну"
-            noResultsText="Ничего не найдено"
-            name="form-field-country-name"
-            options={countriesList}
-            multi
-            value={selectedCountries}
-            onChange={this.handleCountrySelect}
-          />
-          {selectedCountries.length ? citySelect : ''}
-        </Search>
-        {loading ? <Preloader /> : <Events country={selectedCountries} city={selectedCities} entries={entries} />}
+        {loading ? (
+          <Preloader />
+        ) : (
+          <ContentContainer>
+            <Search>
+              <SearchPanelTitleContainer>
+                <h2>Страна:</h2>
+                <SearchInput
+                  id="country-search"
+                  onChange={this.onSearchCountry}
+                  hasValue={this.state.countrySearchTerm}
+                />
+                <SearchInputLabel htmlFor="country-search">
+                  <SearchIcon />
+                </SearchInputLabel>
+              </SearchPanelTitleContainer>
+              <MassonryPanel
+                items={countriesList}
+                selectedItems={selectedCountries}
+                priorityValues={['Россия', 'Украина', 'Беларусь']}
+                searchTerm={this.state.countrySearchTerm}
+                onChange={this.handleCountrySelect}
+              />
+              <SearchPanelTitleContainer>
+                <h2>Город</h2>
+                <SearchInput id="city-search" onChange={this.onSearchCity} hasValue={this.state.citySearchTerm} />
+                <SearchInputLabel htmlFor="city-search">
+                  <SearchIcon />
+                </SearchInputLabel>
+              </SearchPanelTitleContainer>
+              <MassonryPanel
+                items={cities}
+                priorityValues={['Москва', 'Санкт-Петербург', 'Минск', 'Киев']}
+                selectedItems={selectedCities}
+                searchTerm={this.state.citySearchTerm}
+                onChange={this.handleCitySelect}
+              />
+            </Search>
+            <EventsContainer>
+              <h2>События:</h2>
+              <Events country={selectedCountries} city={selectedCities} entries={entries} />
+            </EventsContainer>
+          </ContentContainer>
+        )}
         {this.renderFooter()}
       </Container>
     )

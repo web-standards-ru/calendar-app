@@ -19,12 +19,16 @@
     "react-scripts": "1.1.0"
   },
   "dependencies": {
+    "@types/isotope-layout": "^3.0.4",
     "axios": "^0.17.1",
+    "isotope": "^1.0.0-alpha.3",
+    "isotope-layout": "^3.0.6",
     "moment": "^2.20.1",
+    "query-string": "^6.0.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-highlight-words": "^0.11.0",
     "react-preloader-icon": "^0.1.1",
-    "react-select": "^1.2.1",
     "styled-components": "^3.0.2"
   },
   "scripts": {
@@ -34,11 +38,14 @@
     "eject": "react-scripts eject",
     "precommit": "lint-staged",
     "lint": "eslint ./src",
-    "format":
-      "prettier-eslint --trailing-comma all --no-semi --single-quote --print-width 120 --jsx-bracket-same-line --write 'package.json' 'src/**/*.js'"
+    "format": "prettier-eslint --trailing-comma all --no-semi --single-quote --print-width 120 --jsx-bracket-same-line --write 'package.json' 'src/**/*.js'"
   },
   "lint-staged": {
-    "*.{js,jsx}": ["format", "eslint", "git add"]
+    "*.{js,jsx}": [
+      "format",
+      "eslint",
+      "git add"
+    ]
   },
   "bugs": {
     "url": "https://github.com/web-standards-ru/calendar-app/issues"

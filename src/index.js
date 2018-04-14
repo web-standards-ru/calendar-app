@@ -11,6 +11,7 @@ injectGlobal`
     padding: 0;
     font-family: sans-serif;
     background-color: #f1f1f1;
+    overflow: scroll;
   }
   .Select-option.is-focused {
     background-color: #f1f1f1 !important;

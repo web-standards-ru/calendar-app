@@ -75,8 +75,8 @@ class Events extends Component {
 
   updateEvents = props => {
     const {entries, country, city} = props || this.props
-    let list = this.filterEvents(entries, country, 'country')
-    if (city.length && country.length) {
+    let list = (country.length > 0 && this.filterEvents(entries, country, 'country')) || entries
+    if (city.length) {
       list = this.filterEvents(list, city, 'city')
     }
 

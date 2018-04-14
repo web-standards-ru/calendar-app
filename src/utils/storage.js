@@ -1,3 +1,5 @@
+import * as queryString from 'query-string'
+
 class Storage {
   getSelectedCountry() {
     return this.getItem('selectedCountry') || ''
@@ -16,11 +18,19 @@ class Storage {
   }
 
   setItem(key, value) {
+    let urlParams = queryString.parse(window.location.search)
+    urlParams[key] = value
+    window.history.pushState(
+      urlParams,
+      '',
+      window.location.origin + window.location.pathname + '?' + queryString.stringify(urlParams),
+    )
     return localStorage.setItem(key, value)
   }
 
   getItem(key) {
-    return localStorage.getItem(key)
+    let urlParams = queryString.parse(window.location.search)
+    return urlParams[key] || localStorage.getItem(key)
   }
 }
 
