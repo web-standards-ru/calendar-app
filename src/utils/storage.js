@@ -1,4 +1,4 @@
-import * as queryString from 'query-string'
+import * as queryString from 'querystring-es3'
 
 class Storage {
   getSelectedCountry() {

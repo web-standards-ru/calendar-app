@@ -258,7 +258,7 @@ class App extends Component {
                 onChange={this.handleCountrySelect}
               />
               <SearchPanelTitleContainer>
-                <h2>Город</h2>
+                <h2>Город:</h2>
                 <SearchInput id="city-search" onChange={this.onSearchCity} hasValue={this.state.citySearchTerm} />
                 <SearchInputLabel htmlFor="city-search">
                   <SearchIcon />
