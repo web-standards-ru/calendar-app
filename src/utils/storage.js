@@ -18,7 +18,11 @@ class Storage {
   }
 
   setItem(key, value) {
-    let urlParams = queryString.parse(window.location.search)
+    let search = window.location.search;
+    if (search && search[0] == '?') {
+      search = search.substr(1); // bug in queryString
+    }
+    let urlParams = queryString.parse(search)
     urlParams[key] = value
     window.history.pushState(
       urlParams,
