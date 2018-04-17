@@ -19,7 +19,7 @@ class Storage {
 
   setItem(key, value) {
     let search = window.location.search;
-    if (search && search[0] == '?') {
+    if (search && search[0] === '?') {
       search = search.substr(1); // bug in queryString
     }
     let urlParams = queryString.parse(search)
