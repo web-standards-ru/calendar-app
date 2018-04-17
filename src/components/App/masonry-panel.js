@@ -25,7 +25,7 @@ export class MassonryPanel extends Component {
           priority: elem => (Number(elem.dataset.priority) !== 0 ? elem.dataset.priority : Number.MAX_VALUE),
           name: elem => elem.dataset.label,
         },
-        sortBy: ['selected', 'priority', 'name'],
+        sortBy: this.props.showPriorityItemsFirst ? ['priority', 'name'] : ['name'],
         sortAscending: true,
       })
     }
@@ -86,11 +86,17 @@ export class MassonryPanel extends Component {
       cursor: pointer;
     }
     ${props =>
+      this.getItemPriority(props.item) > 0 &&
+      css`
+        font-weight: bold;
+    `};
+    ${props =>
       this.isSelectedItem(props.item) &&
       css`
         color: red;
         border: 1px solid darkred;
-      `};
+    `};
+   
   `
 
   render() {
@@ -121,4 +127,5 @@ export class MassonryPanel extends Component {
       </div>
     )
   }
+
 }

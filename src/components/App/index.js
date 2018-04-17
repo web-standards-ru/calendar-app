@@ -254,6 +254,7 @@ class App extends Component {
                 items={countriesList}
                 selectedItems={selectedCountries}
                 priorityValues={['Россия', 'Украина', 'Беларусь']}
+                showPriorityItemsFirst={true}
                 searchTerm={this.state.countrySearchTerm}
                 onChange={this.handleCountrySelect}
               />
