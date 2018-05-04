@@ -6,8 +6,8 @@
 
 ## Для разработки
 
-* `npm i`
-* `npm start`
+* `npm i` / `yarn`
+* `npm start` / `yarn start`
 
 ## Для сборки
 
