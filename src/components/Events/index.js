@@ -12,8 +12,14 @@ const List = styled.ul`
   margin-left: -15px;
 `
 const Item = styled.li`
-  width: 50%;
+  width: 20%;
   display: flex;
+  @media (max-width: 1980px) {
+    width: 25%;
+  }
+  @media (max-width: 1280px) {
+    width: 50%;
+  }
   @media (max-width: 666px) {
     width: 100%;
   }
@@ -30,7 +36,7 @@ const ItemInner = styled.div`
   margin-left: 15px;
 `
 const Name = styled.a`
-  display: block;
+  display: inline-block;
   margin-bottom: 10px;
   line-height: 1;
   font-family: Helvetica;

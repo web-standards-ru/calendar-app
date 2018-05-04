@@ -8,12 +8,15 @@ import {getEvents} from '../../utils/api'
 import Footer from '../Footer'
 
 const Container = styled.div`
-  max-width: 768px;
-  margin: 0 auto;
   padding: 15px;
   position: relative;
 `
-const Header = styled.h1`
+const Header = styled.div`
+  max-width: 768px;
+  margin-left: auto;
+  margin-right: auto;
+`
+const Title = styled.h1`
   font-size: 36px;
 `
 const Search = styled.div`
@@ -140,20 +143,23 @@ class App extends Component {
     )
     return (
       <Container>
-        <Header>Календарь событий по&nbsp;фронтенду</Header>
-        <Search>
-          <StyledSelect
-            clearValueText="Очистить"
-            placeholder="Выберите страну"
-            noResultsText="Ничего не найдено"
-            name="form-field-country-name"
-            options={countriesList}
-            multi
-            value={selectedCountry}
-            onChange={this.handleCountrySelect}
-          />
-          {selectedCountry.length ? citySelect : ''}
-        </Search>
+        <Header>
+          <Title>Календарь событий по&nbsp;фронтенду</Title>
+          <Search>
+            <StyledSelect
+              clearValueText="Очистить"
+              placeholder="Выберите страну"
+              noResultsText="Ничего не найдено"
+              name="form-field-country-name"
+              options={countriesList}
+              multi
+              value={selectedCountry}
+              onChange={this.handleCountrySelect}
+            />
+            {selectedCountry.length ? citySelect : ''}
+          </Search>
+        </Header>
+
         {loading ? <Preloader /> : <Events country={selectedCountry} city={selectedCity} entries={entries} />}
         {this.renderFooter()}
       </Container>
