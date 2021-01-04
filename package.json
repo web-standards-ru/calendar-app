@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@types/isotope-layout": "^3.0.4",
-    "axios": "^0.17.1",
+    "axios": "^0.21.1",
     "isotope": "^1.0.0-alpha.3",
     "isotope-layout": "^3.0.6",
     "moment": "^2.20.1",
